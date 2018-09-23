@@ -14,9 +14,9 @@ So in this first article I am just want to talk about how I got setup to write
 artices, a kind of meta-article if you will.
 
 I decided to use Github pages because I wanted to write my articles with
-markdown text and had plenty of experience doing markdown in Github as I was
-working before on the [Google Cloud Visual Studio Extension][1] and everything
-in Github one way or another is markdown.
+markdown text and had plenty of experience doing markdown in Github. I used to
+work on the [Google Cloud Visual Studio Extension][1] and everything in Github
+one way or another is markdown.
 
 The setup process is pretty straight forward until I tried to get the Jekyll
 processor installed locally on my machine. I normally use a 2013 MacBook Pro to
@@ -25,7 +25,7 @@ because this machine rocks. The process to install Jekyll calls for using Ruby
 gems, use bundler (which I don't know what it is) and more. You can see the
 process as recommended by Github [here][2].
 
-Well, the process failed miserably for me. One of the packages (nokogirl)
+Well, the process failed miserably for me. One of the packages ([nokogirl][4])
 requires a native extension which apprently failed to build. This just aborted
 the setup process and now I have a bunch of ruby packages installed on my
 machine and no functioning Jekyll installation. Bummer.
@@ -81,10 +81,11 @@ docker run \
 Where `FULL_PATH_TO_REPO` will point to the full path of the local clone of your
 pages repo. The `--host` parameter is necessary since by default the server will
 listen on `127.0.0.1` only. That means only listening on connections coming from
-the _inside_ of the container. This is security measure, but it is preventing us
-from reacing the server from outside of the container as we want to make it
+the _inside_ of the container. This is a security measure, but it is preventing
+us from reacing the server from outside of the container as we want to make it
 listen on any host.
 
 [1]: https://github.com/GoogleCloudPlatform/google-cloud-visualstudio
 [2]: https://help.github.com/articles/setting-up-your-github-pages-site-locally-with-jekyll/#step-2-install-jekyll-using-bundler
 [3]: https://github.com/docker-library/ruby/blob/3149de350c3bc540492a4331881b925e608c3abd/2.4/stretch/Dockerfile
+[4]: https://github.com/sparklemotion/nokogiri
