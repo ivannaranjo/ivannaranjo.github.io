@@ -1,4 +1,7 @@
-# Introduction and first article
+---
+theme: jekyll-theme-slate
+title: "Introduction and first article"
+---
 
 Hello, I always wanted to start writting about my experiences in coding. I have
 been in one way or another coding professionally for just about 20 years. I have
