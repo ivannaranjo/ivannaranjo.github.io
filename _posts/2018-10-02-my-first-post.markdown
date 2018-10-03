@@ -88,6 +88,13 @@ the _inside_ of the container. This is a security measure, but it is preventing
 us from reacing the server from outside of the container as we want to make it
 listen on any host.
 
+And that's it! Now that I am fully setup and able to run my blog locally I will
+start writting about what has it been programming professionally since 1998,
+what is like to work as a profressional programmer and technologies that I find
+interesting. Hope you like it, find it useful or at least entertaining.
+
+Until next time.
+
 [1]: https://github.com/GoogleCloudPlatform/google-cloud-visualstudio
 [2]: https://help.github.com/articles/setting-up-your-github-pages-site-locally-with-jekyll/#step-2-install-jekyll-using-bundler
 [3]: https://github.com/docker-library/ruby/blob/3149de350c3bc540492a4331881b925e608c3abd/2.4/stretch/Dockerfile
