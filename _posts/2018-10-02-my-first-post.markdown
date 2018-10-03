@@ -1,6 +1,6 @@
 ---
-theme: jekyll-theme-slate
 title: "Introduction and first article"
+layout: post
 ---
 
 Hello, I always wanted to start writting about my experiences in coding. I have
