@@ -1,0 +1,122 @@
+---
+title: "Playing with HTTPS in App Engine"
+layout: post
+categories: [blog]
+tags: [gcp, gae, hsts, http, https]
+---
+
+Recently I have been playing with creating websites in [Google App Engine][gae] that
+make full use of the free SSL certificates and wanted to make small write up on
+how easy is to set them up. I use Flex but the very same process should apply to
+all flavors of App Engine.
+
+App Engine allows you to bring in your own custom domains and associate them
+with your app. You do that in the `App Engine > Settings` tab in the Cloud
+Console site. When you add a new domain it will ask you to perform certain
+changes in the the DNS records to point the domain to Google servers. This also
+proves to Google that you own the domain.
+
+Once the domain is associated with Google getting an SSL certificate is just a
+matter of checking a checkbox. Google will take care of getting a new SSL
+certificate for you and storing securely in their servers.
+
+This is possible because of the App Engine architecture. Whenever you send a
+request to your app this request is first intercepted by the App Engine frontend
+which will direct it to the right backend (your code) depending on the
+settings. This same frontend is also responsible for terminaing the SSL
+connection. What this means is that the frontend is the only one that has access
+to your certificate, after that the communication between the frontend and your
+code all happens in plain HTTP but inside of Google's private network, which is
+already encrypted.
+
+This means that you don't need to worry about configuring SSL in your code,
+keeping the certificate secure, etc... Google will do that for you. This also
+means that you don't need to worry about renewing the certificates when the
+expire, Google will also take care of that for you automatically. Your code only
+has to worry about responding to HTTP traffic from the frontend and doing what
+you need to do
+
+While all of this work that Google does for you is fantastic there's still some
+basic stuff that they don't do that I wish they did automatically. I'm referring
+to upgrading HTTP connections to HTTPS for you.
+
+### Upgrading HTTP connections to HTTPS
+When you are enabling HTTPS connections to your server you need to decide what
+to do when somebody sends HTTP traffic instead. A lot of websites simply return
+a 301 response to redirect the user to the HTTPS endpoint. You still need to do
+this in App Engine.
+
+Since I mentioned that the App Engine frontend is the one that receives the
+request and terminates the SSL connection, how do you know if the original
+request was sent using HTTPS or not? Well enter the `X-Forwarded-Proto` HTTP header.
+
+The `X-Forwarded-Proto` HTTP header is added by the App Engine frontend when
+sending requests to your code to indicate the original protocol that was used to
+issue the request. If the original request came through HTTPS then the value
+would be `"https"`. You can check the `X-Forwarded-Proto` header and generate a
+redirect response if the original request was not HTTPS.
+
+### HSTS header
+This initial redirect from HTTP to HTTPS is still vulvernable to
+man-in-the-middle attacks of course. Wouldn't it be awesome if we could somehow
+tell the browsers that our server only accepts HTTPS requests and avoid this
+risk?
+
+Well there is such a mechanism, it is called [HTTP Strict Transport
+Security][hsts] (HSTS) and you can use HTSTS to indicate your preference for
+HTTPS in two distinct ways.
+
+Once your traffic is coming to you through HTTPS you can add the
+`Strict-Transport-Security` header to every response. This header indicates
+things like for how long this redirection should happen and whether your domain
+should be added to the list of _preloaded_ HTTPS domains, domains that always
+require HTTPS traffic. For security reasons the `Strict-Transport-Security` header will be
+ignored if returned while using HTTP.
+
+Once this is setup every subsequent request by the client should always go
+through HTTPS.
+
+### HSTS preloaded list
+Of course the `Strict-Transport-Security` header does not avoid the initial
+upgrade of the protocol from HTTP to HTTPS. To mitigate this further you can
+register your domain with the HSTS preloaded list that some browsers
+support.
+
+You can add your own dowmain to Chrome's HSTS preloaded list by using the
+https://hstspreload.org/ website. Chrome's list is also used in other major
+browsers such as IE 11, Edge, Safari, Firefox, etc...
+
+For course adding your domain to the HSTS preload list should be done with care
+and have very strict requirements. They include for example the fact that all of
+your subdomains should be accessible by HTTPS. Getting out of the HSTS preloaded
+list can be quite painful, so be careful here.
+
+Another way in which you can be assured that your connections are always
+performed using HTTPS is by using a domain in a TLD that is preloaded as a whole
+in the HSTS lists. The new `app` and `dev` domains that Google offers are an
+example of this. All of the domains registered in those TLDs will by definition
+require HTTPS from day one. This requirement will make it easier for you to
+fully support HTTPS since you will not have any legacy cases where you might
+still need it as these TLDs are brand new.
+
+### Summary
+In conclusion, enabling HTTPS by getting a free SSL certificate is the easy
+part, there is a lot still to do if you want to make good use of HTTPS. This is
+what I was referring to that I wish App Engine would do for you. I wish I had a
+checkbox somewhere where I can just say I want to use HTTPS everywhere and let
+the App Engine frontend take care of all of this for me.
+
+When playing around with HTTPS I found the the [HSTS article][hsts-article] in
+Wikipedia quite useful and a good starting point for other information on the
+subject.
+
+### Note
+As a final note, if you use the free SSL certificates in App Engine know that
+they come from the [Let's Encrypt][letsenc] project, so consider donating to
+them to ensure that the project keeps going.
+
+[hsts-article]: https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+[gae]: https://cloud.google.com/appengine/
+[letsenc]: https://letsencrypt.org/
+[hsts]: https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+
