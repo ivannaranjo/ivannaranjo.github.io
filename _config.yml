@@ -1,3 +1,4 @@
 theme: jekyll-theme-slate
 title: "Programing tales of wonder"
 description: "Ivan's personal blog."
+exclude: [ tools, README.md, Gemfile, Gemfile.lock ]
